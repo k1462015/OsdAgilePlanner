@@ -12,5 +12,9 @@ public class Skill {
         this.skillId = skillId;
     }
 
+    public String toString(){
+        return skillId;
+    }
+
 
 }

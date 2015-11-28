@@ -38,9 +38,33 @@ public class GUI extends JFrame{
         });
         JButton saveModel = new JButton("Save Model");
         JButton allocateStaff = new JButton("Allocate Staff");
+        allocateStaff.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.allocateStaff();
+            }
+        });
         JButton displaySchedule = new JButton("Display Schedule");
+        displaySchedule.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.displaySchedule();
+            }
+        });
         JButton nextIteration = new JButton("Next Iteration");
+        nextIteration.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.nextIteration();
+            }
+        });
         JButton calculateCost = new JButton("Calculate Cost");
+        calculateCost.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.calculateCost();
+            }
+        });
         addComponents(jpanel,loadModel,saveModel,allocateStaff,displaySchedule,nextIteration,calculateCost);
     }
 

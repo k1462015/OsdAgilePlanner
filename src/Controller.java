@@ -288,7 +288,81 @@ public class Controller {
      * And then add this to schedule
      */
     public void allocateStaff(){
+        ArrayList<Task> unallocatedTask = new ArrayList<>();
+        //Find all unallocated task
+        System.out.println("Total tasks: "+allTasks.size());
+        for(Task task:allTasks){
+            if(task.getAssignment() == null){
+                if(task.getDependsOn().size() > 0){
+                    ///Check if their dependsOn Task has been allocated
+                    ArrayList<Task> dependsOn = task.getDependsOn();
+                    boolean taskDependsComplete = true;
+                    for (Task dependsTask:dependsOn){
+                        if(dependsTask.getAssignment() == null){
+                            taskDependsComplete = false;
+                        }
+                    }
+                    if(taskDependsComplete){
+                        unallocatedTask.add(task);
+                    }else{
+                        System.out.println("Task "+task.getTaskId()+" has incompleted dependent tasks");
+                    }
+                }else{
+                    System.out.println("Task "+task.getTaskId()+" has no depends on");
+                    unallocatedTask.add(task);
+                }
+            }else{
+                System.out.println(task.getTaskId()+" has been allocated");
+            }
+        }
+        System.out.println("Total unallocated tasks: "+unallocatedTask.size());
+        ///Find unallocated staff member (cheapest first)
+        ArrayList<Staff> unallocatedStaff = new ArrayList<>();
+        for (Staff staff:allStaff){
+            if(staff.getAssigned() == null){
+                unallocatedStaff.add(staff);
+            }
+        }
+        ///Check staff member has all required skills
+        for (Task task:unallocatedTask){
+            //Get tasks skills
+            ArrayList<Skill> taskNeeds = task.getNeeds();
 
+            //Find staff who has required skills
+            ArrayList<Staff> compatibleStaff = new ArrayList<>();
+            for (Staff staff:unallocatedStaff){
+                ArrayList<Skill> staffHas = staff.getHas();
+                if(staffHas.containsAll(taskNeeds)){
+                    compatibleStaff.add(staff);
+                }else{
+                    System.out.println("Staff's has skills "+staffHas.toString()+" is not sufficient for Task "+task.getTaskId()+" needs "+taskNeeds.toString());
+                }
+            }
+
+            //Find cheapest staff
+            if(compatibleStaff.size() > 0){
+                Staff chosenStaff = compatibleStaff.get(0);
+                for(int i = 1;i < compatibleStaff.size();i++){
+                    Staff staff = compatibleStaff.get(i);
+                    if(staff.getCostDay() < chosenStaff.getCostDay()){
+                        chosenStaff = staff;
+                    }
+                }
+                if(chosenStaff != null){
+                    ///Create new assignment linking task and staff
+                    Assignment assignment = new Assignment();
+                    System.out.println("Created new Assignment: Staff "+chosenStaff.getStaffId()+" allocated to "+task.getTaskId());
+                    assignment.setTask(task);
+                    assignment.setStaff(chosenStaff);
+                    task.setAssignment(assignment);
+                    chosenStaff.setAssigned(assignment);
+                    schedule.getAssignments().add(assignment);
+                }
+            }else{
+                System.out.println("No compatible staff found for "+task.getTaskId());
+            }
+
+        }
     }
 
     /**
@@ -299,6 +373,7 @@ public class Controller {
         //Loop through each assignment
         //Provide info on staffId,costDay,taskId and duration
         ArrayList<Assignment> assignments = schedule.getAssignments();
+        System.out.println("Staff Id\tCost p/day\tTask Id\tTask duration\t");
         for (Assignment assignment:assignments){
             StringBuilder sb = new StringBuilder();
             sb.append(assignment.getStaff().getStaffId()+"\t");
@@ -338,5 +413,6 @@ public class Controller {
             totalCost += costDay*taskDuration;
         }
         schedule.setTotalCost(totalCost);
+        System.out.println("Total cost of all assignments: "+totalCost);
     }
 }
