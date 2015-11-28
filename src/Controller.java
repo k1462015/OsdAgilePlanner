@@ -1,19 +1,23 @@
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Created by Tahmidul on 28/11/2015.
  */
 public class Controller {
     Schedule schedule;
-    ArrayList<Story> stories;
+    ArrayList<Story> allStories;
     ArrayList<Staff> allStaff;
     ArrayList<Task> allTasks;
+    NavigableMap<String,Skill> allSkills;
+//    ArrayList<Skill> allSkills;
 
     public Controller(){
         schedule = new Schedule();
         allStaff = new ArrayList<>();
         allTasks = new ArrayList<>();
-        stories = new ArrayList<>();
+        allStories = new ArrayList<>();
+        allSkills = new TreeMap<>();
+//        allSkills = new ArrayList<>();
         //User loads in.txt
         //This should create all task object's
         //And create all staff objects
@@ -27,19 +31,37 @@ public class Controller {
      * And initialises all staff
      * and tasks and schedule and skills
      */
-    public void initialise(ArrayList<String> fileData){
-        for(String line:fileData){
-            //If it is an object deceleration
-            if(checkIfContains(line,": Task",": Staff",": Skill",": Schedule",": Story")){
-                createObject(line);
-            }else{
-                //Adding attributes
-                modifyObject(line);
+    public void initialise(){
+        ArrayList<String> fileData = FileReader.readInTxt();
+        if(fileData != null){
+            for(String line:fileData){
+                String trimmedLine = line.trim();
+                if(trimmedLine.length() > 0){
+                    //If it is an object deceleration
+                    if(checkIfContains(trimmedLine,": Task",": Staff",": Skill",": Schedule",": Story")){
+                        System.out.println("Creating object for line "+trimmedLine);
+                        createObject(trimmedLine);
+                    }else{
+                        System.out.println("Modifying object for line "+trimmedLine);
+                        //Adding attributes
+                        modifyObject(trimmedLine);
+                    }
+                }
+
             }
+            if(schedule == null){
+                schedule = new Schedule();
+                System.out.println("Creating new schedule since schedule couldn't be found in text file");
+            }
+            //Display all data collected
+            System.out.println("Total Tasks found: "+allTasks.size());
+            System.out.println("Total Staff found: "+allStaff.size());
+            System.out.println("Total Skills found: "+allSkills.size());
+            System.out.println("Total Stories found: "+allStories.size());
+        }else{
+            System.out.println("Couldn't find in.txt");
         }
-        if(schedule == null){
-            schedule = new Schedule();
-        }
+
     }
 
     public static boolean checkIfContains(String subject,String...args){
@@ -55,21 +77,27 @@ public class Controller {
         String id = line.split(" ")[0];
         if(checkIfContains(line,": Task")){
             Task task = new Task();
-            task.setTaskId(id);
+            allTasks.add(task);
+            System.out.println("Created new Task");
         }
         if(checkIfContains(line,": Staff")){
             Staff staff = new Staff();
-            staff.setStaffId(id);
+            allStaff.add(staff);
+            System.out.println("Created new staff");
         }
         if(checkIfContains(line,": Skill")){
             Skill skill = new Skill();
-            skill.setSkillId(id);
+            allSkills.put(id,skill);
+            System.out.println("Created new skill");
         }
         if(checkIfContains(line,": Schedule")){
             schedule = new Schedule();
+            System.out.println("Created new schedule");
         }
         if(checkIfContains(line,": Story")){
-
+            Story story = new Story();
+            story.setStoryId(id);
+            allStories.add(story);
         }
     }
 
@@ -79,19 +107,168 @@ public class Controller {
      * @param line - String from text file
      */
     public void modifyObject(String line){
+        //Check if is an attribute or association
+        if(!checkIfContains(line,":")){
+            //Is an attribute
+            modifyAttribute(line);
+        }else{
+            //Is an association
+            modifyAssociation(line);
+        }
+    }
+
+    public void modifyAssociation(String line){
+        System.out.println("Adding association");
+        String[] split = line.split(" ");
+        String firstId = split[0];
+        String secondId = split[split.length - 1].split("\\.")[0];
         if(checkType(line) == ObjectType.TASK){
+            if(checkIfContains(line,"subtasks")){
+                //This is a Task subTasks association
+                String storyId = secondId;
+                Story story = findStory(secondId);
+                Task task = findTask(firstId);
+                if(story != null && task != null){
+                    story.addSubTask(task);
+                    System.out.println("Assigned story "+secondId+" to task "+firstId);
+                }else{
+                    if(story == null){
+                        System.out.println("Story not found with id "+secondId);
+                    }else{
+                        System.out.println("Task not found with id "+firstId);
+                    }
+                }
+            }else{
+                //This is a Task dependsOn association
+                Task task1 = findTask(firstId);
+                Task task2 = findTask(secondId);
+                if(task1 != null && task2 != null){
+                    task2.getDependsOn().add(task1);
+                    System.out.println("Made task "+secondId+" depend on "+firstId);
+                }else{
+                    if(task1 == null){
+                        System.out.println("Couldn't find task"+"with id "+firstId+" in modify association");
+                    }
+                    if(task2 == null){
+                        System.out.println("Couldn't find task"+"with id "+secondId+" in modify association");
+                    }
+                }
+            }
+        }
+        if(checkType(line) == ObjectType.SKILL){
+            Skill skill = findSkill(firstId);
+            if(skill != null){
+                if(checkIfContains(line,"needs")){
+                    //This is a Skill needs association
+                    Task task = findTask(secondId);
+                    if(skill != null && task != null){
+                        task.getNeeds().add(skill);
+                        System.out.println("Added skill needs "+firstId+" to task "+secondId);
+                    }else{
+                        if(task == null){
+                            System.out.println("Task not found with id: "+secondId);
+                        }else{
+                            System.out.println("Skill not found with id "+firstId);
+                        }
+                    }
+                }else{
+                    //This is a Skill has association
+                    Staff staff = findStaff(secondId);
+                    staff.getHas().add(skill);
+                }
+            }else{
+                System.out.println("Couldn't find skill with id: "+firstId);
+            }
+
+
+        }
+    }
+
+    public Task findTask(String taskId){
+        for(Task task:allTasks){
+            if(task.getTaskId().equals(taskId)){
+                return task;
+            }
+        }
+        return null;
+    }
+
+    public Story findStory(String storyId){
+        for(Story story:allStories){
+            if(story.getStoryId().equals(storyId)){
+                return story;
+            }
+        }
+        return null;
+    }
+
+    public Skill findSkill(String skillId){
+        Skill skill = allSkills.get(skillId);
+
+//        for(Skill skill:allSkills){
+//            if(skill.getSkillId().equals(skillId)){
+//                return skill;
+//            }
+//        }
+        return skill;
+    }
+
+    public Staff findStaff(String staffId){
+        for(Staff staff:allStaff){
+            if(staff.getStaffId().equals(staffId)){
+                return staff;
+            }
+        }
+        return null;
+    }
+
+    public void modifyAttribute(String line){
+        //Then is an attribute
+        if(checkType(line) == ObjectType.TASK){
+            String[] split = line.split(" ");
+            Task task = allTasks.get(allTasks.size() - 1);
             if(checkIfContains(line,"taskId")){
-                String[] breakdown= line.split(" ");
-                String taskId = breakdown[breakdown.length - 1];
+                //Assign taskId
+                String taskId = split[split.length - 1];
                 taskId = taskId.replace("\"","");
-                int taskId = Integer.parseInt(line.split("="))
+                task.setTaskId(taskId);
+            }else{
+                //Assign task duration
+                int duration;
+                try{
+                    duration = Integer.parseInt(split[split.length - 1]);
+                    task.setDuration(duration);
+                }catch (NumberFormatException e){
+                    System.out.println("Number format exception for line: "+line);
+                }
             }
         }
         if(checkType(line) == ObjectType.STAFF){
-
+            String[] split = line.split(" ");
+            Staff staff = allStaff.get(allStaff.size() - 1);
+            if(checkIfContains(line,"staffId")){
+                //Assign staffId
+                String staffId = split[split.length - 1];
+                staffId = staffId.replace("\"","");
+                staff.setStaffId(staffId);
+            }else{
+                //Assign task duration
+                int costDay = Integer.parseInt(split[split.length - 1]);
+                staff.setCostDay(costDay);
+            }
         }
         if(checkType(line) == ObjectType.SKILL){
-
+            String[] split = line.split(" ");
+            Map.Entry<String,Skill> lastEntry = allSkills.lastEntry();
+            Skill skill = lastEntry.getValue();
+            if(checkIfContains(line,"skillId") && skill != null){
+                //Assign staffId
+                String skillId = split[split.length - 1];
+                skillId = skillId.replace("\"","");
+                skill.setSkillId(skillId);
+            }else{
+                System.out.println("Couldn't retrieve last skill");
+            }
         }
     }
 
@@ -102,7 +279,15 @@ public class Controller {
      * @return - ObjectType enum
      */
     public ObjectType checkType(String line){
-
+        if(checkIfContains(line,"taskId","duration","subtasks")){
+            return ObjectType.TASK;
+        }
+        if(checkIfContains(line,"staffId","costDay")){
+            return ObjectType.STAFF;
+        }
+        if(checkIfContains(line,"skillId","needs","has")){
+            return ObjectType.SKILL;
+        }
         return ObjectType.TASK;
     }
 

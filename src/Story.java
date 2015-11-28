@@ -7,6 +7,9 @@ public class Story {
     private String storyId;
     private ArrayList<Task> subTasks;
 
+    public Story(){
+        subTasks = new ArrayList<>();
+    }
 
     public String getStoryId() {
         return storyId;

@@ -3,6 +3,15 @@
  */
 public class Main {
     public static void main(String[] args){
+//        String operatingSystem = System.getProperty("os.name").toLowerCase();
+//        String fileSeperator = "/";
+//        if(operatingSystem.contains("mac")){
+//            fileSeperator = "\\";
+//        }
+//        System.out.println(System.getProperty("user.dir")+fileSeperator+"in.txt");
+//        String text = "t3.dependsOn";
+//        String[] split = text.split("\\.");
+//        System.out.println(split.length);
         GUI gui = new GUI();
 //        System.out.println("Hello world");
 //        Task t1 = new Task();

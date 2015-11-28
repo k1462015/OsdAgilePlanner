@@ -2,6 +2,8 @@
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Created by Tahmidul on 28/11/2015.
@@ -28,6 +30,12 @@ public class GUI extends JFrame{
 //        setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 
         JButton loadModel = new JButton("Load Model");
+        loadModel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.initialise();
+            }
+        });
         JButton saveModel = new JButton("Save Model");
         JButton allocateStaff = new JButton("Allocate Staff");
         JButton displaySchedule = new JButton("Display Schedule");

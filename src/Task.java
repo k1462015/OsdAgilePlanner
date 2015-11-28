@@ -12,6 +12,7 @@ public class Task {
 
     public Task(){
         dependsOn = new ArrayList<>();
+        needs = new ArrayList<>();
     }
 
     public String getTaskId() {
@@ -54,11 +55,6 @@ public class Task {
         this.assignment = assignment;
     }
 
-    public void addDependsOnTask(Task...task){
-        for (Task t:task){
-            dependsOn.add(t);
-        }
-    }
     public int totalDuration(){
         int totalDuration = 0;
         //Loop through all dependsOn Task
