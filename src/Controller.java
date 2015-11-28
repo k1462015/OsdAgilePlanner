@@ -9,7 +9,6 @@ public class Controller {
     ArrayList<Staff> allStaff;
     ArrayList<Task> allTasks;
     NavigableMap<String,Skill> allSkills;
-//    ArrayList<Skill> allSkills;
 
     public Controller(){
         schedule = new Schedule();
@@ -17,13 +16,6 @@ public class Controller {
         allTasks = new ArrayList<>();
         allStories = new ArrayList<>();
         allSkills = new TreeMap<>();
-//        allSkills = new ArrayList<>();
-        //User loads in.txt
-        //This should create all task object's
-        //And create all staff objects
-
-
-
     }
 
     /**
@@ -204,12 +196,6 @@ public class Controller {
 
     public Skill findSkill(String skillId){
         Skill skill = allSkills.get(skillId);
-
-//        for(Skill skill:allSkills){
-//            if(skill.getSkillId().equals(skillId)){
-//                return skill;
-//            }
-//        }
         return skill;
     }
 
