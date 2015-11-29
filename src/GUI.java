@@ -33,6 +33,7 @@ public class GUI extends JFrame{
         loadModel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                controller = new Controller();
                 controller.initialise();
             }
         });

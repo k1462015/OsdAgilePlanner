@@ -335,7 +335,7 @@ public class Controller {
                 if(staffHas.containsAll(taskNeeds)){
                     compatibleStaff.add(staff);
                 }else{
-                    System.out.println("Staff's has skills "+staffHas.toString()+" is not sufficient for Task "+task.getTaskId()+" needs "+taskNeeds.toString());
+                    System.out.println("Staff "+staff.getStaffId()+" has skills "+staffHas.toString()+" is not sufficient for Task "+task.getTaskId()+" needs "+taskNeeds.toString());
                 }
             }
 
@@ -348,16 +348,14 @@ public class Controller {
                         chosenStaff = staff;
                     }
                 }
-                if(chosenStaff != null){
-                    ///Create new assignment linking task and staff
-                    Assignment assignment = new Assignment();
-                    System.out.println("Created new Assignment: Staff "+chosenStaff.getStaffId()+" allocated to "+task.getTaskId());
-                    assignment.setTask(task);
-                    assignment.setStaff(chosenStaff);
-                    task.setAssignment(assignment);
-                    chosenStaff.setAssigned(assignment);
-                    schedule.getAssignments().add(assignment);
-                }
+                ///Create new assignment linking task and staff
+                Assignment assignment = new Assignment();
+                System.out.println("Created new Assignment: Staff "+chosenStaff.getStaffId()+" allocated to "+task.getTaskId());
+                assignment.setTask(task);
+                assignment.setStaff(chosenStaff);
+                task.setAssignment(assignment);
+                chosenStaff.setAssigned(assignment);
+                schedule.getAssignments().add(assignment);
             }else{
                 System.out.println("No compatible staff found for "+task.getTaskId());
             }
