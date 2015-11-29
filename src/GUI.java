@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
  */
 public class GUI extends JFrame{
     Controller controller;
-
+    JPanel jpanel;
     public GUI(){
         super("Agile Development");
         controller = new Controller();
@@ -24,7 +24,7 @@ public class GUI extends JFrame{
 
     public void initUi(){
         //Sets main layout to box layout
-        JPanel jpanel = new JPanel();
+        jpanel = new JPanel();
         add(jpanel, BorderLayout.NORTH);
         jpanel.setLayout(new BoxLayout(jpanel,BoxLayout.PAGE_AXIS));
 //        setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
@@ -50,6 +50,15 @@ public class GUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.displaySchedule();
+                JPanel tempJPanel = new JPanel();
+                JLabel jLabel = new JLabel("Schedule");
+                tempJPanel.setLayout(new BoxLayout(tempJPanel,BoxLayout.PAGE_AXIS));
+                tempJPanel.add(jLabel);
+                tempJPanel.add(new JScrollPane(createSchedule()));
+                JLabel totalCostLabel = new JLabel("Total Schedule Cost: "+controller.schedule.getTotalCost()+"");
+                tempJPanel.add(totalCostLabel);
+                jpanel.add(tempJPanel);
+                setVisible(true);
             }
         });
         JButton nextIteration = new JButton("Next Iteration");
@@ -72,6 +81,22 @@ public class GUI extends JFrame{
     public void addComponents(JPanel panel,Component... components){
         for (int i = 0;i < components.length;i++){
             panel.add(components[i]);
+        }
+    }
+
+    public JTable createSchedule(){
+        String[] columnNames = {"Staff Id","Cost per/day","Task Id","Task Duration"};
+        Object[][] data = new Object[controller.schedule.getAssignments().size()][];
+        int row = 0;
+        for (Assignment assignment:controller.schedule.getAssignments()){
+            data[row] = new Object[]{assignment.getStaff().getStaffId(),assignment.getStaff().getCostDay(),assignment.getTask().getTaskId(),assignment.getTask().getDuration()};
+            row++;
+        }
+        JTable jTable = new JTable(data,columnNames);
+        if(jTable != null){
+            return jTable;
+        }else{
+            return new JTable();
         }
     }
 

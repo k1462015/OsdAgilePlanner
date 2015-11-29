@@ -289,6 +289,7 @@ public class Controller {
      */
     public void allocateStaff(){
         ArrayList<Task> unallocatedTask = new ArrayList<>();
+        ArrayList<Task> incompleteTasks = new ArrayList<>();
         //Find all unallocated task
         System.out.println("Total tasks: "+allTasks.size());
         for(Task task:allTasks){
@@ -305,6 +306,7 @@ public class Controller {
                     if(taskDependsComplete){
                         unallocatedTask.add(task);
                     }else{
+                        incompleteTasks.add(task);
                         System.out.println("Task "+task.getTaskId()+" has incompleted dependent tasks");
                     }
                 }else{
@@ -316,28 +318,13 @@ public class Controller {
             }
         }
         System.out.println("Total unallocated tasks: "+unallocatedTask.size());
-        ///Find unallocated staff member (cheapest first)
-        ArrayList<Staff> unallocatedStaff = new ArrayList<>();
-        for (Staff staff:allStaff){
-            if(staff.getAssigned() == null){
-                unallocatedStaff.add(staff);
-            }
-        }
         ///Check staff member has all required skills
         for (Task task:unallocatedTask){
             //Get tasks skills
             ArrayList<Skill> taskNeeds = task.getNeeds();
 
             //Find staff who has required skills
-            ArrayList<Staff> compatibleStaff = new ArrayList<>();
-            for (Staff staff:unallocatedStaff){
-                ArrayList<Skill> staffHas = staff.getHas();
-                if(staffHas.containsAll(taskNeeds)){
-                    compatibleStaff.add(staff);
-                }else{
-                    System.out.println("Staff "+staff.getStaffId()+" has skills "+staffHas.toString()+" is not sufficient for Task "+task.getTaskId()+" needs "+taskNeeds.toString());
-                }
-            }
+            ArrayList<Staff> compatibleStaff = findCompatibleStaff(task);
 
             //Find cheapest staff
             if(compatibleStaff.size() > 0){
@@ -361,6 +348,41 @@ public class Controller {
             }
 
         }
+        if(incompleteTasks.size() > 0){
+            boolean compatibleStaffAvailable = false;
+            for (Task task:incompleteTasks){
+                if(findCompatibleStaff(task).size() > 0){
+                    compatibleStaffAvailable = true;
+                }
+            }
+            if(compatibleStaffAvailable){
+                System.out.println("Recursively calling allocate staff");
+                allocateStaff();
+            }
+        }
+    }
+
+    public ArrayList<Staff> findCompatibleStaff(Task task){
+        ArrayList<Staff> compatibleStaff = new ArrayList<>();
+        ArrayList<Skill> taskNeeds = task.getNeeds();
+        //Find unallocated staff
+        ArrayList<Staff> unallocatedStaff = new ArrayList<>();
+        for (Staff staff:allStaff){
+            if(staff.getAssigned() == null){
+                unallocatedStaff.add(staff);
+            }
+        }
+        for (Staff staff:unallocatedStaff){
+            ArrayList<Skill> staffHas = staff.getHas();
+            if(staffHas.containsAll(taskNeeds)){
+                compatibleStaff.add(staff);
+            }else{
+                System.out.println("Staff "+staff.getStaffId()+
+                        " has skills "+staffHas.toString()+" is not sufficient for Task "
+                        +task.getTaskId()+" needs "+taskNeeds.toString());
+            }
+        }
+        return compatibleStaff;
     }
 
     /**
