@@ -8,9 +8,9 @@ public class FileReader {
 
     public static ArrayList<String> readInTxt(){
         String operatingSystem = System.getProperty("os.name").toLowerCase();
-        String fileSeperator = "/";
+        String fileSeperator = "\\";    //Default file seperator for windows
         if(operatingSystem.contains("mac")){
-            fileSeperator = "\\";
+            fileSeperator = "//";
         }
         String filePath = System.getProperty("user.dir")+fileSeperator+"in2.txt";
         ArrayList<String> data = new ArrayList<>();
