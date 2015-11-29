@@ -24,7 +24,7 @@ public class Controller {
      * and tasks and schedule and skills
      */
     public void initialise(){
-        ArrayList<String> fileData = FileReader.readInTxt();
+        ArrayList<String> fileData = FileManager.readInTxt();
         if(fileData != null){
             for(String line:fileData){
                 String trimmedLine = line.trim();
@@ -317,7 +317,22 @@ public class Controller {
                 System.out.println(task.getTaskId()+" has been allocated");
             }
         }
+
         System.out.println("Total unallocated tasks: "+unallocatedTask.size());
+        //Order unallocated staff from longest duration to shortest duration
+        Collections.sort(unallocatedTask, new Comparator<Task>() {
+            @Override
+            public int compare(Task t1, Task t2) {
+                if(t1.totalDuration() == t2.totalDuration()){
+                    return 0;
+                }
+                if(t1.totalDuration() > t2.totalDuration()){
+                    return 1;
+                }else{
+                    return -1;
+                }
+            }
+        });
         ///Check staff member has all required skills
         for (Task task:unallocatedTask){
             //Get tasks skills

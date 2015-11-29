@@ -4,6 +4,7 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 /**
  * Created by Tahmidul on 28/11/2015.
@@ -11,6 +12,7 @@ import java.awt.event.ActionListener;
 public class GUI extends JFrame{
     Controller controller;
     JPanel jpanel;
+    JPanel scheduleJPanel;
     public GUI(){
         super("Agile Development");
         controller = new Controller();
@@ -27,7 +29,8 @@ public class GUI extends JFrame{
         jpanel = new JPanel();
         add(jpanel, BorderLayout.NORTH);
         jpanel.setLayout(new BoxLayout(jpanel,BoxLayout.PAGE_AXIS));
-//        setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
+
+
 
         JButton loadModel = new JButton("Load Model");
         loadModel.addActionListener(new ActionListener() {
@@ -38,6 +41,17 @@ public class GUI extends JFrame{
             }
         });
         JButton saveModel = new JButton("Save Model");
+        saveModel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    FileManager.outputText(controller);
+                    JOptionPane.showMessageDialog(null, "Output saved to out.txt");
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
         JButton allocateStaff = new JButton("Allocate Staff");
         allocateStaff.addActionListener(new ActionListener() {
             @Override
@@ -50,14 +64,7 @@ public class GUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.displaySchedule();
-                JPanel tempJPanel = new JPanel();
-                JLabel jLabel = new JLabel("Schedule");
-                tempJPanel.setLayout(new BoxLayout(tempJPanel,BoxLayout.PAGE_AXIS));
-                tempJPanel.add(jLabel);
-                tempJPanel.add(new JScrollPane(createSchedule()));
-                JLabel totalCostLabel = new JLabel("Total Schedule Cost: "+controller.schedule.getTotalCost()+"");
-                tempJPanel.add(totalCostLabel);
-                jpanel.add(tempJPanel);
+                createSchedule();
                 setVisible(true);
             }
         });
@@ -73,9 +80,14 @@ public class GUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.calculateCost();
+                JOptionPane.showMessageDialog(null, "Total Cost: "+controller.schedule.getTotalCost());
             }
         });
         addComponents(jpanel,loadModel,saveModel,allocateStaff,displaySchedule,nextIteration,calculateCost);
+
+        scheduleJPanel = new JPanel();
+        scheduleJPanel.setLayout(new BoxLayout(scheduleJPanel,BoxLayout.PAGE_AXIS));
+        jpanel.add(scheduleJPanel);
     }
 
     public void addComponents(JPanel panel,Component... components){
@@ -84,7 +96,11 @@ public class GUI extends JFrame{
         }
     }
 
-    public JTable createSchedule(){
+    public void createSchedule(){
+        if(scheduleJPanel.getComponentCount() > 0){
+            scheduleJPanel.removeAll();
+        }
+        scheduleJPanel.removeAll();   //Removes previous table
         String[] columnNames = {"Staff Id","Cost per/day","Task Id","Task Duration"};
         Object[][] data = new Object[controller.schedule.getAssignments().size()][];
         int row = 0;
@@ -93,11 +109,11 @@ public class GUI extends JFrame{
             row++;
         }
         JTable jTable = new JTable(data,columnNames);
-        if(jTable != null){
-            return jTable;
-        }else{
-            return new JTable();
-        }
+        JLabel totalCostLabel = new JLabel("Total Schedule Cost: "+controller.schedule.getTotalCost());
+        JLabel titleLabel = new JLabel("Schedule");
+        scheduleJPanel.add(titleLabel);
+        scheduleJPanel.add(new JScrollPane(jTable));
+        scheduleJPanel.add(totalCostLabel);
     }
 
 }
