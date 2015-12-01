@@ -1,38 +1,39 @@
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by Tahmidul on 28/11/2015.
  */
 public class GUI extends JFrame{
     Controller controller;
-    JPanel jpanel;
+    JPanel optionJPanel;
     JPanel scheduleJPanel;
     public GUI(){
         super("Agile Development");
         controller = new Controller();
         initUi();
 
-        setSize(500,600);
+        setSize(700,600);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
     }
 
     public void initUi(){
-        //Sets main layout to box layout
-        jpanel = new JPanel();
-        add(new JScrollPane(jpanel), BorderLayout.CENTER);
-        jpanel.setLayout(new BoxLayout(jpanel,BoxLayout.PAGE_AXIS));
+        //Sets option layout to box layout
+        optionJPanel = new JPanel();
+        add(new JScrollPane(optionJPanel), BorderLayout.NORTH);
+        optionJPanel.setLayout(new BoxLayout(optionJPanel,BoxLayout.PAGE_AXIS));
 
-
-
-        JButton loadModel = new JButton("Load Model");
+        JMenuBar jMenuBar = new JMenuBar();
+        JMenu jMenu = new JMenu("File");
+        jMenuBar.add(jMenu);
+        JMenuItem loadModel = new JMenuItem("Load Model");
         loadModel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -40,7 +41,7 @@ public class GUI extends JFrame{
                 controller.initialise();
             }
         });
-        JButton saveModel = new JButton("Save Model");
+        JMenuItem saveModel = new JMenuItem("Save Model");
         saveModel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -52,11 +53,25 @@ public class GUI extends JFrame{
                 }
             }
         });
+        jMenu.add(loadModel);
+        jMenu.add(saveModel);
+        setJMenuBar(jMenuBar);
         JButton allocateStaff = new JButton("Allocate Staff");
         allocateStaff.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.allocateStaff();
+                //Show what allocations have been made
+                String message = "";
+                ArrayList<Assignment> assignments = controller.schedule.getAssignments();
+                for (Assignment assignment:assignments){
+                    message += "Staff: "+assignment.getStaff().getStaffId()
+                            +" has been assigned to Task: "+assignment.getTask().getTaskId()+"\n";
+                }
+                if(assignments.size() == 0){
+                    message = "No assignments could be made.";
+                }
+                JOptionPane.showMessageDialog(null,message);
             }
         });
         JButton displaySchedule = new JButton("Display Schedule");
@@ -73,6 +88,9 @@ public class GUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.nextIteration();
+                JOptionPane.showMessageDialog(null, "All staff have been made unallocated. \n" +
+                        "Tasks can now be assigned to corresponding staff members."
+                        +"\nPlease click allocate staff.");
             }
         });
         JButton calculateCost = new JButton("Calculate Cost");
@@ -80,14 +98,25 @@ public class GUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.calculateCost();
-                JOptionPane.showMessageDialog(null, "Total Cost: "+controller.schedule.getTotalCost());
+                //Show breakdown of costs
+                String message = "";
+                ArrayList<Assignment> assignments = controller.schedule.getAssignments();
+                for (Assignment assignment:assignments){
+                    int costDay = assignment.getStaff().getCostDay();
+                    int taskDuration = assignment.getTask().totalDuration();
+                    int totalCost = costDay*taskDuration;
+                    message += "Assignment - Staff: "+assignment.getStaff().getStaffId()
+                            +" |Task: "+assignment.getTask().getTaskId()+
+                            " --> Total:  "+costDay+"*"+taskDuration+" = "+totalCost+"\n";
+                }
+                JOptionPane.showMessageDialog(null, message+"Total Cost: "+controller.schedule.getTotalCost());
             }
         });
-        addComponents(jpanel,loadModel,saveModel,allocateStaff,displaySchedule,nextIteration,calculateCost);
+        addComponents(optionJPanel,allocateStaff,displaySchedule,nextIteration,calculateCost);
 
         scheduleJPanel = new JPanel();
         scheduleJPanel.setLayout(new BoxLayout(scheduleJPanel,BoxLayout.PAGE_AXIS));
-        jpanel.add(scheduleJPanel);
+        add(scheduleJPanel,BorderLayout.CENTER);
     }
 
     public void addComponents(JPanel panel,Component... components){
@@ -112,6 +141,7 @@ public class GUI extends JFrame{
         JTable jTable = new JTable(data,columnNames);
         JLabel totalCostLabel = new JLabel("Total Schedule Cost: "+controller.schedule.getTotalCost());
         JLabel titleLabel = new JLabel("Schedule");
+        titleLabel.setFont(new Font("Courier New", Font.BOLD, 40));
         scheduleJPanel.add(titleLabel);
         scheduleJPanel.add(new JScrollPane(jTable));
         scheduleJPanel.add(totalCostLabel);
