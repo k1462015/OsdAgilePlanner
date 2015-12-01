@@ -319,7 +319,7 @@ public class Controller {
         }
 
         System.out.println("Total unallocated tasks: "+unallocatedTask.size());
-        //Order unallocated staff from longest duration to shortest duration
+        //Order unallocated tasks from longest duration to shortest duration
         Collections.sort(unallocatedTask, new Comparator<Task>() {
             @Override
             public int compare(Task t1, Task t2) {
