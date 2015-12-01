@@ -18,7 +18,7 @@ public class GUI extends JFrame{
         controller = new Controller();
         initUi();
 
-        setSize(1000,1000);
+        setSize(500,600);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
@@ -27,7 +27,7 @@ public class GUI extends JFrame{
     public void initUi(){
         //Sets main layout to box layout
         jpanel = new JPanel();
-        add(jpanel, BorderLayout.NORTH);
+        add(new JScrollPane(jpanel), BorderLayout.CENTER);
         jpanel.setLayout(new BoxLayout(jpanel,BoxLayout.PAGE_AXIS));
 
 
@@ -101,11 +101,12 @@ public class GUI extends JFrame{
             scheduleJPanel.removeAll();
         }
         scheduleJPanel.removeAll();   //Removes previous table
-        String[] columnNames = {"Staff Id","Cost per/day","Task Id","Task Duration"};
+        String[] columnNames = {"Staff Id","Cost per/day","Staff Has","Task Id","Task Duration","Task needs"};
         Object[][] data = new Object[controller.schedule.getAssignments().size()][];
         int row = 0;
         for (Assignment assignment:controller.schedule.getAssignments()){
-            data[row] = new Object[]{assignment.getStaff().getStaffId(),assignment.getStaff().getCostDay(),assignment.getTask().getTaskId(),assignment.getTask().getDuration()};
+            data[row] = new Object[]{assignment.getStaff().getStaffId(),assignment.getStaff().getCostDay(),assignment.getStaff().getHas().toString(),
+                    assignment.getTask().getTaskId(),assignment.getTask().getDuration(),assignment.getTask().getNeeds().toString()};
             row++;
         }
         JTable jTable = new JTable(data,columnNames);
@@ -114,6 +115,7 @@ public class GUI extends JFrame{
         scheduleJPanel.add(titleLabel);
         scheduleJPanel.add(new JScrollPane(jTable));
         scheduleJPanel.add(totalCostLabel);
+        scheduleJPanel.setMaximumSize(new Dimension(2000,200));
     }
 
 }

@@ -49,6 +49,10 @@ public class FileManager {
             writer.write("staffx_"+allStaff.indexOf(staff)+"  :"+"    Staff"+"\n");
             writer.write("staffx_"+allStaff.indexOf(staff)+".staffId  =   "+"\""+staffId+"\""+"\n");
             writer.write("staffx_"+allStaff.indexOf(staff)+".costDay  =   "+costDay+"\n");
+            ArrayList<Skill> has = staff.getHas();
+            for (Skill skill:has){
+                writer.write("staffx_"+allStaff.indexOf(staff)+".has    =   \""+skill.getSkillId()+"\"\n");
+            }
         }
         //Print out all skills
         NavigableMap<String,Skill> allSkills = controller.allSkills;
@@ -67,6 +71,11 @@ public class FileManager {
             writer.write("taskx_"+objectIndex+" :   "+"Task\n");
             writer.write("taskx_"+objectIndex+".taskId  =   \""+taskId+"\"\n");
             writer.write("taskx_"+objectIndex+".duration  =   "+taskDuration+"\n");
+            ArrayList<Skill> needs = task.getNeeds();
+            for (Skill skill:needs){
+                writer.write("taskx_"+objectIndex+".needs    =   \""+skill.getSkillId()+"\"\n");
+            }
+
         }
         //Print out all assignments
         ArrayList<Assignment> assignments = controller.schedule.getAssignments();
