@@ -60,7 +60,9 @@ public class GUI extends JFrame{
         allocateStaff.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                long startTime = System.nanoTime();
                 controller.allocateStaff();
+                long endTime = System.nanoTime();
                 //Show what allocations have been made
                 String message = "";
                 ArrayList<Assignment> assignments = controller.schedule.getAssignments();
@@ -70,7 +72,10 @@ public class GUI extends JFrame{
                 }
                 if(assignments.size() == 0){
                     message = "No assignments could be made.";
+                }else{
+                    message += "\nTime Taken: "+(endTime - startTime)+" ns";
                 }
+
                 JOptionPane.showMessageDialog(null,message);
             }
         });
