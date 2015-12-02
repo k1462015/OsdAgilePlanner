@@ -77,6 +77,7 @@ public class GUI extends JFrame{
                 }
 
                 JOptionPane.showMessageDialog(null,message);
+                createSchedule();
             }
         });
         JButton displaySchedule = new JButton("Display Schedule");
@@ -114,7 +115,7 @@ public class GUI extends JFrame{
                             +" |Task: "+assignment.getTask().getTaskId()+
                             " --> Total:  "+costDay+"*"+taskDuration+" = "+totalCost+"\n";
                 }
-                JOptionPane.showMessageDialog(null, message+"Total Cost: "+controller.schedule.getTotalCost());
+                JOptionPane.showMessageDialog(null, message+"Total Cost: "+controller.schedule.getTotalCost()+" Total Duration: "+controller.schedule.getDuration());
             }
         });
         addComponents(optionJPanel,allocateStaff,displaySchedule,nextIteration,calculateCost);
@@ -131,6 +132,7 @@ public class GUI extends JFrame{
     }
 
     public void createSchedule(){
+        controller.calculateCost();
         if(scheduleJPanel.getComponentCount() > 0){
             scheduleJPanel.removeAll();
         }
@@ -146,11 +148,23 @@ public class GUI extends JFrame{
         JTable jTable = new JTable(data,columnNames);
         JLabel totalCostLabel = new JLabel("Total Schedule Cost: "+controller.schedule.getTotalCost());
         JLabel titleLabel = new JLabel("Schedule");
-        titleLabel.setFont(new Font("Courier New", Font.BOLD, 40));
+        titleLabel.setFont(new Font("Calibri", Font.BOLD, 40));
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JPanel gridPanel = new JPanel(new GridLayout(1,2));
+        Font font = new Font("Calibri",Font.BOLD,20);
+        JLabel scheduleCost = new JLabel("Schedule Cost: "+controller.schedule.getTotalCost());
+        scheduleCost.setFont(font);
+        JLabel scheduleDuration = new JLabel("Schedule Duration: "+controller.schedule.getDuration());
+        scheduleDuration.setFont(font);
+        gridPanel.add(scheduleCost);
+        gridPanel.add(scheduleDuration);
+
         scheduleJPanel.add(titleLabel);
         scheduleJPanel.add(new JScrollPane(jTable));
-        scheduleJPanel.add(totalCostLabel);
+        scheduleJPanel.add(gridPanel);
         scheduleJPanel.setMaximumSize(new Dimension(2000,200));
+        setVisible(true);
     }
 
 }

@@ -442,12 +442,15 @@ public class Controller {
     public void calculateCost(){
         ArrayList<Assignment> assignments = schedule.getAssignments();
         int totalCost = 0;
+        int totalDuration = 0;
         for(Assignment assignment: assignments){
             int costDay = assignment.getStaff().getCostDay();
             int taskDuration = assignment.getTask().totalDuration();
             totalCost += costDay*taskDuration;
+            totalDuration += taskDuration;
         }
         schedule.setTotalCost(totalCost);
+        schedule.setDuration(totalDuration);
         System.out.println("Total cost of all assignments: "+totalCost);
     }
 }
