@@ -41,6 +41,14 @@ public class FileManager {
 
         //Print out schedule declaration
         writer.write("sch   :   Schedule"+"\n");
+        //Print out all skills
+        NavigableMap<String,Skill> allSkills = controller.allSkills;
+        Set<String> skillObjectNames = allSkills.keySet();
+        for (String skillObject:skillObjectNames){
+            writer.write("skillx_"+skillObject+"  :   "+"Skill"+"\n");
+            String skillId = allSkills.get(skillObject).getSkillId();
+            writer.write("skillx_"+skillObject+".skillId  =   \""+skillId+"\"\n");
+        }
         //Print out all staff
         ArrayList<Staff> allStaff = controller.allStaff;
         for (Staff staff:allStaff){
@@ -51,16 +59,14 @@ public class FileManager {
             writer.write("staffx_"+allStaff.indexOf(staff)+".costDay  =   "+costDay+"\n");
             ArrayList<Skill> has = staff.getHas();
             for (Skill skill:has){
-                writer.write("staffx_"+allStaff.indexOf(staff)+".has    =   \""+skill.getSkillId()+"\"\n");
+                String skillObjectNumber = "NOT FOUND";
+                for (String skillObject:skillObjectNames){
+                    if(skill.equals(allSkills.get(skillObject))){
+                        skillObjectNumber = skillObject;
+                    }
+                }
+                writer.write("staffx_"+allStaff.indexOf(staff)+".has    =   skillx_"+skillObjectNumber+"\"\n");
             }
-        }
-        //Print out all skills
-        NavigableMap<String,Skill> allSkills = controller.allSkills;
-        Set<String> skillObjectNames = allSkills.keySet();
-        for (String skillObject:skillObjectNames){
-            writer.write("skillx_"+skillObject+"  :   "+"Skill"+"\n");
-            String skillId = allSkills.get(skillObject).getSkillId();
-            writer.write("skillx_"+skillObject+".skillId  =   \""+skillId+"\"\n");
         }
         //Print out all tasks
         ArrayList<Task> allTasks = controller.allTasks;
@@ -73,7 +79,13 @@ public class FileManager {
             writer.write("taskx_"+objectIndex+".duration  =   "+taskDuration+"\n");
             ArrayList<Skill> needs = task.getNeeds();
             for (Skill skill:needs){
-                writer.write("taskx_"+objectIndex+".needs    =   \""+skill.getSkillId()+"\"\n");
+                String skillObjectNumber = "NOT FOUND";
+                for (String skillObject:skillObjectNames){
+                    if(skill.equals(allSkills.get(skillObject))){
+                        skillObjectNumber = skillObject;
+                    }
+                }
+                writer.write("taskx_"+objectIndex+".needs    =   skillx_"+skillObjectNumber+"\"\n");
             }
             ArrayList<Task> dependsOn = task.getDependsOn();
             for (Task dependTask:dependsOn){
