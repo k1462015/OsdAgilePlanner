@@ -75,6 +75,11 @@ public class FileManager {
             for (Skill skill:needs){
                 writer.write("taskx_"+objectIndex+".needs    =   \""+skill.getSkillId()+"\"\n");
             }
+            ArrayList<Task> dependsOn = task.getDependsOn();
+            for (Task dependTask:dependsOn){
+                int dependTaskIndex = allTasks.indexOf(dependTask);
+                writer.write("taskx_"+objectIndex+".dependsOn    =   taskx_"+dependTaskIndex+"\n");
+            }
 
         }
         //Print out all assignments

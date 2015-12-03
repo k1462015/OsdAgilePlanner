@@ -34,6 +34,8 @@ taskx_2 :   Task
 taskx_2.taskId  =   "t3"
 taskx_2.duration  =   7
 taskx_2.needs    =   "Java"
+taskx_2.dependsOn    =   taskx_0
+taskx_2.dependsOn    =   taskx_1
 assignmentx_0 :   Assignment
 assignmentx_0.task    =   taskx_0
 assignmentx_0.staff    =   staffx_2
