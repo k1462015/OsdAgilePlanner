@@ -18,7 +18,7 @@ public class GUI extends JFrame{
         controller = new Controller();
         initUi();
 
-        setSize(700,600);
+        setSize(1000,600);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
@@ -155,7 +155,7 @@ public class GUI extends JFrame{
             scheduleJPanel.removeAll();
         }
         scheduleJPanel.removeAll();   //Removes previous table
-        String[] columnNames = {"Staff Id","Cost per/day","Staff Has","Task Id","Task Duration","Task needs","Task Depends"};
+        String[] columnNames = {"Assignment Number","Staff Id","Cost per/day","Staff Has","Task Id","Task Duration","Task needs","Task Depends"};
         Object[][] data = new Object[controller.schedule.getAssignments().size()][];
         int row = 0;
         for (Assignment assignment:controller.schedule.getAssignments()){
@@ -163,9 +163,9 @@ public class GUI extends JFrame{
             String taskDependsOn = "";
             ArrayList<Task> dependsOn = task.getDependsOn();
             for (Task t:dependsOn){
-                taskDependsOn += t.getTaskId();
+                taskDependsOn += "["+t.getTaskId()+"]";
             }
-            data[row] = new Object[]{assignment.getStaff().getStaffId(),assignment.getStaff().getCostDay(),assignment.getStaff().getHas().toString(),
+            data[row] = new Object[]{row,assignment.getStaff().getStaffId(),assignment.getStaff().getCostDay(),assignment.getStaff().getHas().toString(),
                     task.getTaskId(),task.getDuration(),task.getNeeds().toString(),taskDependsOn};
             row++;
         }

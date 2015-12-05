@@ -14,7 +14,7 @@ public class FileManager {
         if(operatingSystem.contains("mac")){
             fileSeperator = "//";
         }
-        String filePath = System.getProperty("user.dir")+fileSeperator+"in1.txt";
+        String filePath = System.getProperty("user.dir")+fileSeperator+"yezen1.txt";
         ArrayList<String> data = new ArrayList<>();
         BufferedReader br;
         try{
