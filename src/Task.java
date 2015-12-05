@@ -67,4 +67,8 @@ public class Task {
         //And return
         return totalDuration;
     }
+
+    public String toString(){
+        return taskId;
+    }
 }

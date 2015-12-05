@@ -44,4 +44,8 @@ public class Staff {
     public void setAssigned(Assignment assigned) {
         this.assigned = assigned;
     }
+
+    public String toString(){
+        return staffId;
+    }
 }

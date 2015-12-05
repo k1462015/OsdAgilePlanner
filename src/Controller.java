@@ -331,8 +331,14 @@ public class Controller {
                 System.out.println(task.getTaskId()+" has already been allocated");
             }
         }
-
-        System.out.println("Total unallocated tasks: "+unallocatedTask.size());
+        ArrayList<Staff> unallocatedStaff = new ArrayList<>();
+        for (Staff staff:allStaff){
+            if(staff.getAssigned() == null){
+                unallocatedStaff.add(staff);
+            }
+        }
+        System.out.println("Total unallocated tasks: "+unallocatedTask.size()+" "+unallocatedTask.toString());
+        System.out.println("All unallocated staff: "+unallocatedStaff.toString());
         //Order unallocated tasks from longest duration to shortest duration
         Collections.sort(unallocatedTask, new Comparator<Task>() {
             @Override
@@ -381,7 +387,16 @@ public class Controller {
             boolean compatibleStaffAvailable = false;
             for (Task task:incompleteTasks){
                 if(findCompatibleStaff(task).size() > 0){
-                    compatibleStaffAvailable = true;
+                    ArrayList<Task> dependsOnTasks = task.getDependsOn();
+                    boolean allDependsOnCompleted = true;
+                    for (Task dependTask:dependsOnTasks){
+                        if(dependTask.getAssignment() == null){
+                            allDependsOnCompleted = false;
+                        }
+                    }
+                    if(allDependsOnCompleted){
+                        compatibleStaffAvailable = true;
+                    }
                 }
             }
             if(compatibleStaffAvailable){
@@ -411,6 +426,7 @@ public class Controller {
                         +task.getTaskId()+" needs "+taskNeeds.toString());
             }
         }
+        System.out.println("Task: "+task.getTaskId()+"  Compatible staff: "+compatibleStaff.toString());
         return compatibleStaff;
     }
 

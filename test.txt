@@ -24,7 +24,7 @@ t8 : Task
 t8.taskId = "t8"
 t8.duration = 5
 t9 : Task
-t9.taskId = "t9”
+t9.taskId = "t9"
 t9.duration = 9
 t10 : Task
 t10.taskId = "t10"
@@ -46,7 +46,7 @@ s4.costDay = 5
 sk1 : Skill
 sk1.skillId = "Java"
 sk2 : Skill 
-sk2.skillId = "JavaScript”
+sk2.skillId = "JavaScript"
 sk3 : Skill
 sk3.skillId = "PHP"
 sk4 : Skill
