@@ -60,17 +60,35 @@ public class GUI extends JFrame{
         allocateStaff.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //Show what allocations have already been made
+                String message = "";
+                ArrayList<Assignment> oldAssignments = new ArrayList<Assignment>();
+                controller.schedule.getAssignments();
+                if(controller.schedule.getAssignments().size() > 0){
+                    message += "----Old Assignments---\n";
+                }
+                for (Assignment assignment:controller.schedule.getAssignments()){
+                    message += "Staff: "+assignment.getStaff().getStaffId()
+                            +" has already been assigned to Task: "+assignment.getTask().getTaskId()+"\n";
+                    oldAssignments.add(assignment);
+                }
+
                 long startTime = System.nanoTime();
                 controller.allocateStaff();
                 long endTime = System.nanoTime();
-                //Show what allocations have been made
-                String message = "";
-                ArrayList<Assignment> assignments = controller.schedule.getAssignments();
-                for (Assignment assignment:assignments){
-                    message += "Staff: "+assignment.getStaff().getStaffId()
-                            +" has been assigned to Task: "+assignment.getTask().getTaskId()+"\n";
+
+                //Shows new assignments
+                ArrayList<Assignment> newAssignments = controller.schedule.getAssignments();
+                message += "----New Assignments---\n";
+                for (int i  = 0;i < newAssignments.size();i++){
+                    Assignment assignment = newAssignments.get(i);
+                    if(!oldAssignments.contains(assignment)){
+                        message += "New Assignment --> Staff: "+assignment.getStaff().getStaffId()
+                                +" has been assigned to Task: "+assignment.getTask().getTaskId()+"\n";
+                    }
                 }
-                if(assignments.size() == 0){
+
+                if(newAssignments.size() == 0){
                     message = "No assignments could be made.";
                 }else{
                     message += "\nTime Taken: "+(endTime - startTime)+" ns";
@@ -137,12 +155,18 @@ public class GUI extends JFrame{
             scheduleJPanel.removeAll();
         }
         scheduleJPanel.removeAll();   //Removes previous table
-        String[] columnNames = {"Staff Id","Cost per/day","Staff Has","Task Id","Task Duration","Task needs"};
+        String[] columnNames = {"Staff Id","Cost per/day","Staff Has","Task Id","Task Duration","Task needs","Task Depends"};
         Object[][] data = new Object[controller.schedule.getAssignments().size()][];
         int row = 0;
         for (Assignment assignment:controller.schedule.getAssignments()){
+            Task task = assignment.getTask();
+            String taskDependsOn = "";
+            ArrayList<Task> dependsOn = task.getDependsOn();
+            for (Task t:dependsOn){
+                taskDependsOn += t.getTaskId();
+            }
             data[row] = new Object[]{assignment.getStaff().getStaffId(),assignment.getStaff().getCostDay(),assignment.getStaff().getHas().toString(),
-                    assignment.getTask().getTaskId(),assignment.getTask().getDuration(),assignment.getTask().getNeeds().toString()};
+                    task.getTaskId(),task.getDuration(),task.getNeeds().toString(),taskDependsOn};
             row++;
         }
         JTable jTable = new JTable(data,columnNames);

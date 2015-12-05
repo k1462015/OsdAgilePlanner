@@ -166,7 +166,11 @@ public class Controller {
                 }else{
                     //This is a Skill has association
                     Staff staff = findStaff(secondId);
-                    staff.getHas().add(skill);
+                    if(staff != null){
+                        staff.getHas().add(skill);
+                    }else{
+                        System.out.println("Couldn't add association as not staff found with id: "+secondId+" ("+line+")");
+                    }
                 }
             }else{
                 System.out.println("Couldn't find skill with id: "+firstId);
@@ -209,9 +213,9 @@ public class Controller {
     }
 
     public void modifyAttribute(String line){
+        String[] split = line.split(" ");
         //Then is an attribute
         if(checkType(line) == ObjectType.TASK){
-            String[] split = line.split(" ");
             Task task = allTasks.get(allTasks.size() - 1);
             if(checkIfContains(line,"taskId")){
                 //Assign taskId
@@ -230,7 +234,6 @@ public class Controller {
             }
         }
         if(checkType(line) == ObjectType.STAFF){
-            String[] split = line.split(" ");
             Staff staff = allStaff.get(allStaff.size() - 1);
             if(checkIfContains(line,"staffId")){
                 //Assign staffId
@@ -244,7 +247,6 @@ public class Controller {
             }
         }
         if(checkType(line) == ObjectType.SKILL){
-            String[] split = line.split(" ");
             Map.Entry<String,Skill> lastEntry = allSkills.lastEntry();
             Skill skill = lastEntry.getValue();
             if(checkIfContains(line,"skillId") && skill != null){
@@ -256,6 +258,15 @@ public class Controller {
                 System.out.println("Couldn't retrieve last skill");
             }
         }
+        if(checkType(line) == ObjectType.STORY){
+            Story story = allStories.get(allStories.size() - 1);
+            if(checkIfContains(line,"storyId")){
+                //Assign storyId
+                String storyId = split[split.length - 1];
+                storyId = storyId.replace("\"","");
+                story.setStoryId(storyId);
+            }
+        }
     }
 
     /**
@@ -265,7 +276,7 @@ public class Controller {
      * @return - ObjectType enum
      */
     public ObjectType checkType(String line){
-        if(checkIfContains(line,"taskId","duration","subtasks")){
+        if(checkIfContains(line,"taskId","duration","subtasks","dependsOn")){
             return ObjectType.TASK;
         }
         if(checkIfContains(line,"staffId","costDay")){
@@ -274,7 +285,10 @@ public class Controller {
         if(checkIfContains(line,"skillId","needs","has")){
             return ObjectType.SKILL;
         }
-        return ObjectType.TASK;
+        if(checkIfContains(line,"storyId")){
+            return ObjectType.STORY;
+        }
+        return null;
     }
 
 
@@ -314,7 +328,7 @@ public class Controller {
                     unallocatedTask.add(task);
                 }
             }else{
-                System.out.println(task.getTaskId()+" has been allocated");
+                System.out.println(task.getTaskId()+" has already been allocated");
             }
         }
 
