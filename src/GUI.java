@@ -137,7 +137,7 @@ public class GUI extends JFrame{
                 ArrayList<Assignment> assignments = controller.schedule.getAssignments();
                 for (Assignment assignment:assignments){
                     int costDay = assignment.getStaff().getCostDay();
-                    int taskDuration = assignment.getTask().totalDuration();
+                    int taskDuration = assignment.getTask().getDuration();
                     int totalCost = costDay*taskDuration;
                     message += "Assignment - Staff: "+assignment.getStaff().getStaffId()
                             +" |Task: "+assignment.getTask().getTaskId()+
