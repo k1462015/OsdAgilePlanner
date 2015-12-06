@@ -331,14 +331,7 @@ public class Controller {
                 System.out.println(task.getTaskId()+" has already been allocated");
             }
         }
-        ArrayList<Staff> unallocatedStaff = new ArrayList<>();
-        for (Staff staff:allStaff){
-            if(staff.getAssigned() == null){
-                unallocatedStaff.add(staff);
-            }
-        }
         System.out.println("Total unallocated tasks: "+unallocatedTask.size()+" "+unallocatedTask.toString());
-        System.out.println("All unallocated staff: "+unallocatedStaff.toString());
         //Order unallocated tasks from longest duration to shortest duration
         Collections.sort(unallocatedTask, new Comparator<Task>() {
             @Override
@@ -347,29 +340,24 @@ public class Controller {
                     return 0;
                 }
                 if(t1.totalDuration() > t2.totalDuration()){
-                    return 1;
-                }else{
                     return -1;
+                }else{
+                    return 1;
                 }
             }
         });
+        System.out.println("All unallocated tasks (ordered from longest to shortest duration): "+unallocatedTask.toString());
         ///Check staff member has all required skills
         for (Task task:unallocatedTask){
             //Get tasks skills
             ArrayList<Skill> taskNeeds = task.getNeeds();
 
             //Find staff who has required skills
-            ArrayList<Staff> compatibleStaff = findCompatibleStaff(task);
+            ArrayList<Staff> compatibleStaffs = findCompatibleStaff(task);
 
             //Find cheapest staff
-            if(compatibleStaff.size() > 0){
-                Staff chosenStaff = compatibleStaff.get(0);
-                for(int i = 1;i < compatibleStaff.size();i++){
-                    Staff staff = compatibleStaff.get(i);
-                    if(staff.getCostDay() < chosenStaff.getCostDay()){
-                        chosenStaff = staff;
-                    }
-                }
+            if(compatibleStaffs.size() > 0){
+                Staff chosenStaff = compatibleStaffs.get(0);
                 ///Create new assignment linking task and staff
                 Assignment assignment = new Assignment();
                 System.out.println("Created new Assignment: Staff "+chosenStaff.getStaffId()+" allocated to "+task.getTaskId());
@@ -426,6 +414,19 @@ public class Controller {
                         +task.getTaskId()+" needs "+taskNeeds.toString());
             }
         }
+        Collections.sort(compatibleStaff, new Comparator<Staff>() {
+            @Override
+            public int compare(Staff s1, Staff s2) {
+                if(s1.getCostDay() == s2.getCostDay()){
+                    return 0;
+                }
+                if(s1.getCostDay() > s2.getCostDay()){
+                    return 1;
+                }else{
+                    return -1;
+                }
+            }
+        });
         System.out.println("Task: "+task.getTaskId()+"  Compatible staff: "+compatibleStaff.toString());
         return compatibleStaff;
     }
@@ -475,9 +476,10 @@ public class Controller {
         int totalDuration = 0;
         for(Assignment assignment: assignments){
             int costDay = assignment.getStaff().getCostDay();
-            int taskDuration = assignment.getTask().totalDuration();
+            int taskTotalDuration = assignment.getTask().totalDuration();
+            int taskDuration = assignment.getTask().getDuration();
             totalCost += costDay*taskDuration;
-            totalDuration += taskDuration;
+            totalDuration += taskTotalDuration;
         }
         schedule.setTotalCost(totalCost);
         schedule.setDuration(totalDuration);

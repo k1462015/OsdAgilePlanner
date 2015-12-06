@@ -69,6 +69,6 @@ public class Task {
     }
 
     public String toString(){
-        return taskId;
+        return taskId+"("+totalDuration()+")";
     }
 }

@@ -46,6 +46,6 @@ public class Staff {
     }
 
     public String toString(){
-        return staffId;
+        return staffId+"("+costDay+")";
     }
 }
