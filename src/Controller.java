@@ -23,8 +23,8 @@ public class Controller {
      * And initialises all staff
      * and tasks and schedule and skills
      */
-    public void initialise(){
-        ArrayList<String> fileData = FileManager.readInTxt();
+    public void initialise(String filePath){
+        ArrayList<String> fileData = FileManager.readInTxt(filePath);
         if(fileData != null){
             for(String line:fileData){
                 String trimmedLine = line.trim();

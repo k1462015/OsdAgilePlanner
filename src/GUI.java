@@ -1,8 +1,10 @@
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -37,8 +39,16 @@ public class GUI extends JFrame{
         loadModel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller = new Controller();
-                controller.initialise();
+                JFileChooser jFileChooser = new JFileChooser();
+                jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES","txt","text");
+                jFileChooser.setFileFilter(filter);
+                if(jFileChooser.showOpenDialog(GUI.this) == JFileChooser.APPROVE_OPTION){
+                    File file = jFileChooser.getSelectedFile();
+                    controller = new Controller();
+                    controller.initialise(file.getAbsolutePath());
+                }
+
             }
         });
         JMenuItem saveModel = new JMenuItem("Save Model");

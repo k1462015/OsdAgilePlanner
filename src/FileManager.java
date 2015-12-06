@@ -8,13 +8,13 @@ import java.util.Set;
  */
 public class FileManager {
 
-    public static ArrayList<String> readInTxt(){
-        String operatingSystem = System.getProperty("os.name").toLowerCase();
-        String fileSeperator = "\\";    //Default file seperator for windows
-        if(operatingSystem.contains("mac")){
-            fileSeperator = "//";
-        }
-        String filePath = System.getProperty("user.dir")+fileSeperator+"test.txt";
+    public static ArrayList<String> readInTxt(String filePath){
+//        String operatingSystem = System.getProperty("os.name").toLowerCase();
+//        String fileSeperator = "\\";    //Default file seperator for windows
+//        if(operatingSystem.contains("mac")){
+//            fileSeperator = "//";
+//        }
+//        String filePath = System.getProperty("user.dir")+fileSeperator+"test.txt";
         ArrayList<String> data = new ArrayList<>();
         BufferedReader br;
         try{
