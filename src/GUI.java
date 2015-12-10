@@ -83,9 +83,9 @@ public class GUI extends JFrame{
                     oldAssignments.add(assignment);
                 }
 
-                long startTime = System.nanoTime();
+                long startTime = System.currentTimeMillis();
                 controller.allocateStaff();
-                long endTime = System.nanoTime();
+                long endTime = System.currentTimeMillis();
 
                 //Shows new assignments
                 ArrayList<Assignment> newAssignments = controller.schedule.getAssignments();
@@ -101,7 +101,7 @@ public class GUI extends JFrame{
                 if(newAssignments.size() == 0){
                     message = "No assignments could be made.";
                 }else{
-                    message += "\nTime Taken: "+(endTime - startTime)+" ns";
+                    message += "\nTime Taken: "+(endTime - startTime)+" ms";
                 }
                 JTextArea textArea = new JTextArea(message);
                 textArea.setEditable(false);
