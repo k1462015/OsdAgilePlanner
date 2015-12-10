@@ -103,8 +103,14 @@ public class GUI extends JFrame{
                 }else{
                     message += "\nTime Taken: "+(endTime - startTime)+" ns";
                 }
+                JTextArea textArea = new JTextArea(message);
+                textArea.setEditable(false);
+                JScrollPane scrollPane = new JScrollPane(textArea);
+                textArea.setLineWrap(true);
+                textArea.setWrapStyleWord(true);
+                scrollPane.setPreferredSize( new Dimension( 500, 500 ) );
 
-                JOptionPane.showMessageDialog(null,message);
+                JOptionPane.showMessageDialog(null,scrollPane);
                 createSchedule();
             }
         });
@@ -143,7 +149,15 @@ public class GUI extends JFrame{
                             +" |Task: "+assignment.getTask().getTaskId()+
                             " --> Total:  "+costDay+"*"+taskDuration+" = "+totalCost+"\n";
                 }
-                JOptionPane.showMessageDialog(null, message+"Total Cost: "+controller.schedule.getTotalCost()+" Total Duration: "+controller.schedule.getDuration());
+                JTextArea textArea = new JTextArea(message+controller.schedule.getTotalCost()+" Total Duration: "+controller.schedule.getDuration());
+                textArea.setEditable(false);
+                JScrollPane scrollPane = new JScrollPane(textArea);
+                textArea.setLineWrap(true);
+                textArea.setWrapStyleWord(true);
+                scrollPane.setPreferredSize( new Dimension( 500, 500 ) );
+
+                JOptionPane.showMessageDialog(null,scrollPane);
+
             }
         });
         addComponents(optionJPanel,allocateStaff,displaySchedule,nextIteration,calculateCost);
